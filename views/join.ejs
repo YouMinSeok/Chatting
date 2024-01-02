@@ -1,0 +1,190 @@
+<!-- views/join.ejs -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/join.css?v=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <title>5조 홈페이지</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #modal-confirm {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        
+        .join-container {
+            background-color: white;
+            border: 2px solid black; /* 검정 테두리 추가 */
+            border-radius: 5px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .join-form {
+            text-align: center;
+        }
+
+        .int-area {
+            margin-bottom: 20px;
+        }
+
+        .btn-area {
+            margin-top: 20px;
+        }
+
+        .btn-area button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .caption {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="join-container">
+        <section class="join-form">
+            <h1>회원가입</h1>
+            <form method="POST" action="/join" id="joinForm">
+                <div class="int-area">
+                    <input type="text" name="na" id="na" autocomplete="off" required>
+                    <label for="na">이름</label>
+                </div>
+                <div class="int-area">
+                    <input type="email" name="email" id="email" autocomplete="off" required>
+                    <label for="email">이메일</label>
+                </div>
+                <div class="int-area">
+                    <input type="text" name="id" id="id" autocomplete="off" required>
+                    <label for="id">아이디</label>
+                    <p id="id-error" style="color: red;"></p>
+                </div>
+                <div class="int-area">
+                    <input type="password" name="pw" id="pw" autocomplete="off" required>
+                    <label for="pw">비밀번호</label>
+                    <span id="pw_check_message"></span>
+                </div>
+                <div class="int-area">
+                    <input type="password" name="pw_check" id="pw_check" autocomplete="off" required>
+                    <label for="pw_check">비밀번호 확인</label>
+                </div>
+                <div class="btn-area">
+                    <button type="button" id="joinButton">가입하기</button>
+                </div>
+            </form>
+            <div class="caption">
+                <a href="/">[ HOME ]</a>
+            </div>
+        </section>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <button id="modal-confirm">확인</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById("myModal");
+    var joinButton = document.getElementById("joinButton");
+    var confirmButton = document.getElementById("modal-confirm");
+    var joinForm = document.getElementById("joinForm");
+
+    joinButton.addEventListener("click", function () {
+        var name = document.getElementById("na").value;
+        var email = document.getElementById("email").value;
+        var id = document.getElementById("id").value;
+        var password = document.getElementById("pw").value;
+        var password_check = document.getElementById("pw_check").value;
+
+        if (!name || !email || !id || !password || !password_check) {
+            document.getElementById("modal-text").innerText = "모든 필드를 입력하세요.";
+            modal.style.display = "flex";
+        } else if (name === id) {
+            document.getElementById("modal-text").innerText = "아이디와 이름이 중복입니다. 다시 입력하세요.";
+            modal.style.display = "flex";
+        } else if (id.length < 8 || id.length > 12) {
+            document.getElementById("modal-text").innerText = "아이디는 8자 이상 12자 이하로 설정하세요.";
+            modal.style.display = "flex";
+        } else if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{12,}$/.test(password)) {
+            document.getElementById("modal-text").innerText = "비밀번호가 너무 약합니다. 대소문자, 특수문자를 포함하여 12자 이상으로 설정하세요.";
+            modal.style.display = "flex";
+        } else if (password !== password_check) {
+            document.getElementById("modal-text").innerText = "비밀번호가 일치하지 않습니다. 다시 입력하세요.";
+            modal.style.display = "flex";
+        } else {
+            // 서버에 중복 확인 및 사용자 데이터 저장을 요청합니다.
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/join", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    modal.style.display = "none"; // 서버 응답을 받으면 모달을 숨깁니다.
+                    if (xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById("modal-text").innerText = response.message;
+                        modal.style.display = "flex";
+                        if (response.success) {
+                            // 회원가입 성공 시 index 페이지로 리디렉션
+                            setTimeout(function () {
+                                window.location.href = '/';  // '/'는 실제 리디렉션하고자 하는 페이지로 변경해야 합니다.
+                            }, 2000);
+                        }
+                    }
+                }
+            };
+            var data = "na=" + name + "&email=" + email + "&id=" + id + "&pw=" + password + "&pw_check=" + password_check;
+            xhr.send(data);
+        }
+    });
+
+    confirmButton.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+});
+
+    </script>
+</body>
+
+</html>

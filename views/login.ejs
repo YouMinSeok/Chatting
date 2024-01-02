@@ -1,0 +1,220 @@
+<!-- 수정된 HTML 템플릿 (index.ejs) -->
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/login.css">
+    <title>채팅 웹</title>
+
+    <style>
+        body {
+            /* 배경화면 이미지를 제거하였습니다. */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            border: 2px solid #ddd;
+            border-bottom: none;
+        }
+
+        .login-container {
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 5px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form {
+            text-align: center;
+        }
+
+        .int-area {
+            margin-bottom: 20px;
+        }
+
+        .btn-area {
+            margin-top: 20px;
+        }
+
+        .btn-area a {
+            text-decoration: none;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .btn-area button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* 모달 공통으로 사용할 스타일 */
+        .modal-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        /* 에러 모달 확인 버튼 스타일 수정 */
+        #error-modal-confirm {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        /* 성공 모달 확인 버튼 스타일 수정 */
+        #success-modal-confirm {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <section class="login-form">
+            <h1>로그인</h1>
+            <form id="loginForm" action="/login" method="POST"> <!-- 수정된 부분 -->
+                <div class="int-area">
+                    <input type="text" name="username" id="username" autocomplete="off" required>
+                    <label for="username">아이디</label>
+                </div>
+
+                <div class="int-area">
+                    <input type="password" name="pw" id="pw" autocomplete="off" required>
+                    <label for="pw">비밀번호</label>
+                </div>
+
+                <div class="btn-area">
+                    <button type="submit">로그인</button>
+                </div>
+
+                <div class="btn-area">
+                    <a href="/id_find">아이디 찾기</a>
+                    <a href="/pw_find">비밀번호 찾기</a>
+                    <a href="/join">회원가입</a>
+                </div>
+            </form>
+            <div class="caption">
+                <a href="/" style="font-size: 18px;">[ HOME ]</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- loginErrorModal 내의 modal-confirm ID 수정 -->
+    <div class="modal" id="loginErrorModal" style="display: none;">
+        <div class="modal-content">
+            <p id="modal-text">아이디와 비밀번호가 일치하지 않습니다. 다시 입력해주세요.</p>
+            <button class="modal-button" id="error-modal-confirm">확인</button>
+        </div>
+    </div>
+
+    <!-- loginSuccessModal 내의 modal-confirm ID 수정 -->
+    <div class="modal" id="loginSuccessModal" style="display: none;">
+        <div class="modal-content">
+            <p>로그인이 완료되었습니다.</p>
+            <button class="modal-button" id="success-modal-confirm">확인</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const pw = document.getElementById('pw').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `username=${username}&pw=${pw}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const loginSuccessModal = document.getElementById('loginSuccessModal');
+                        loginSuccessModal.style.display = 'block';
+                    } else {
+                        const loginErrorModal = document.getElementById('loginErrorModal');
+                        loginErrorModal.style.display = 'block';
+                        const modalText = document.getElementById('modal-text');
+                        modalText.textContent = data.message;
+                    }
+                });
+        });
+
+        // 에러 모달 확인 버튼 ID 수정
+        const modalErrorConfirm = document.getElementById('error-modal-confirm');
+        modalErrorConfirm.addEventListener('click', function () {
+            const loginErrorModal = document.getElementById('loginErrorModal');
+            loginErrorModal.style.display = 'none';
+        });
+
+        // 성공 모달 확인 버튼 ID 수정
+        const modalSuccessConfirm = document.getElementById('success-modal-confirm');
+        modalSuccessConfirm.addEventListener('click', function () {
+            const loginSuccessModal = document.getElementById('loginSuccessModal');
+            loginSuccessModal.style.display = 'none';
+            // 메인 페이지로 이동
+            window.location.href = '/main';
+        });
+    </script>
+</body>
+
+</html>

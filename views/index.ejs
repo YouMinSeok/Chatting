@@ -1,0 +1,108 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <style>
+        /* 추가: 초기에는 회원가입, 로그인 링크만 표시 */
+        #login-signup-links {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #user-ui {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* 추가: 로고 애니메이션 스타일 */
+        #logo-container h1 {
+            font-size: 36px;
+            color: #4caf50;
+            margin-bottom: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            animation: logoAnimation 4s infinite ease-in-out;
+        }
+
+        @keyframes logoAnimation {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="phone-container">
+        <div id="phone-screen">
+            <!-- 수정: 채팅 앱을 위로 옮김 -->
+            <div id="header-bar">
+                <h2 style="text-align: center; margin-bottom: 0; color: #fff;">Chat App</h2>
+            </div>
+            <div id="logo-container" style="text-align: center; margin-top: 50px;">
+                <!-- 수정: 텍스트로 이쁘게 만든 로고 표시 -->
+                <h1>채팅 앱에 오신걸 환영합니다</h1>
+            </div>
+            <div id="chat-container" style="display: none;"> <!-- 수정: 초기에는 숨김 -->
+                <div id="chat-messages"></div>
+                <div id="input-container">
+                    <!-- 수정: 채팅 메시지 입력 창과 전송 버튼 삭제 -->
+                </div>
+            </div>
+            <div id="button-container">
+                <button id="back-button" class="round-icon" onclick="goBack()"></button>
+                <button id="home-button" class="round-icon" onclick="goHome()"></button>
+                <button id="settings-button" class="round-icon" onclick="openSettings()"></button>
+            </div>
+            <!-- 추가: 로그인, 회원가입 링크 -->
+            <div id="login-signup-links">
+                <p style="color: #555;">채팅 기능을 사용하시려면 로그인을 해주세요!</p>
+                <a href="/login" class="styled-link">로그인</a>
+                <a href="/join" class="styled-link">회원가입</a>
+            </div>
+            <!-- 추가: 로그인 성공 시 나타날 UI -->
+            <div id="user-ui">
+                <!-- 여기에 로그인 성공 시 나타날 UI의 내용을 추가하세요 -->
+                <p>로그인 성공! 여기에 채팅이나 다른 기능을 추가하세요.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script.js"></script>
+    <script>
+        function goBack() {
+            // Implement logic to go back
+            console.log('Back button clicked');
+        }
+
+        function goHome() {
+            // Implement logic to go home
+            console.log('Home button clicked');
+        }
+
+        function openSettings() {
+            // Implement logic to open settings
+            console.log('Settings button clicked');
+        }
+
+        // 추가: 로고가 끝나면 로그인, 회원가입 링크 표시
+        setTimeout(() => {
+            document.getElementById('chat-container').style.display = 'block';
+            document.getElementById('login-signup-links').style.display = 'block';
+            document.getElementById('user-ui').style.display = 'none'; // 수정: 초기에는 숨김
+        }, 5000); // 5초 후에 표시되도록 설정 (단위: 밀리초)
+    </script>
+</body>
+</html>
